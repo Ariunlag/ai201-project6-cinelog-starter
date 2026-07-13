@@ -13,8 +13,8 @@
 **How I verified:** Compared the implementation with the established deduplication pattern in `add_to_collection()` and confirmed the duplicate check runs before `db.session.add()` and `db.session.commit()`.
 
 ## Comment 3 — Missing test
-**What I did:**
-**How I verified:**
+**What I did:** Added `tests/test_watchlist.py` with `test_add_to_watchlist_nonexistent_film_raises`, following the same fixtures and `pytest.raises(FilmNotFoundError)` structure as the equivalent collection service test.
+**How I verified:** Ran `pytest tests/test_watchlist.py -v`; the test passed (`1 passed`).
 
 ## Comment 4 — Default visibility
 **My position:**
