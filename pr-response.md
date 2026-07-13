@@ -27,9 +27,9 @@ I used AI as a devil's advocate for my drafts on default visibility and sort ord
 **Engagement with reviewer's point:** I agree with the maintainer that date-added order better reflects how users build a watchlist: a newly saved film should not disappear into an unrelated position determined by its title. A real downside is recency bias—frequent additions can push older films down indefinitely, even though those older entries may be the ones the user most wants to stop postponing. Date added also is not true priority; only the user knows what they intend to watch next. I would still use newest-first as the initial default because it reflects observable activity without inventing priority, then add selectable alphabetical/oldest-first sorting or manual priority if CineLog develops the watchlist into a planning tool.
 
 ## Comment 6 — Rebase
-**What conflicted:**
-**How I resolved it:**
-**How I verified no conflict remains:**
+**What conflicted:** The watchlist branch was based on the pre-refactor schema, where film IDs were integers, while `main` had migrated `Film.id` and related foreign keys to UUID strings. The rebase also produced an add/add conflict in `.gitignore` because both branches introduced generated-file rules.
+**How I resolved it:** I restored `WatchlistEntry` on top of the current `main` model and changed its `film_id` column to `db.String(36)` with a foreign key to `film.id`. I updated the watchlist service and route documentation to describe `film_id` as a UUID, retained the relationships used when serializing watchlist films, and combined the `.gitignore` rules so main's environment/database exclusions and the Python cache exclusions are preserved.
+**How I verified no conflict remains:** I searched the watchlist code for remaining integer film-ID references, confirmed both collection and watchlist `film_id` columns use `db.String(36)`, and ran `pytest tests/ -v` with all 5 tests passing. The rebase completed with a clean working tree, and `git log --merges --oneline origin/main..HEAD` returned no commits, confirming the feature branch adds no merge commits.
 
 ## PR Description
 <!-- Written at the end — feature overview, design decisions, manual testing steps -->
