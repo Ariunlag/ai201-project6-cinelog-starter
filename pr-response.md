@@ -3,6 +3,11 @@
 ## AI Usage
 I used AI as a devil's advocate for my drafts on default visibility and sort order. I asked what a careful reviewer would challenge and which tradeoffs I had missed. The critique identified two real gaps: changing the visibility default alone does not provide privacy while CineLog's read endpoint ignores the flag, and newest-first sorting can bury older films indefinitely. I revised my responses to make privacy enforcement part of the recommendation and to acknowledge recency bias and the longer-term value of user-controlled sorting or priority.
 
+## Branch / PR Link
+Feature branch: https://github.com/Ariunlag/ai201-project6-cinelog-starter/tree/feature/watchlist
+
+PR compare link: https://github.com/Ariunlag/ai201-project6-cinelog-starter/compare/main...feature/watchlist
+
 ## Comment 1 — Rename
 **What I did:** Renamed `save_to_watchlist()` to `add_to_watchlist()` in `services/watchlist_service.py` to follow the project's `verb_to_noun` naming convention. I also updated the import and function call in `routes/watchlist/watchlist.py`.
 
@@ -33,3 +38,33 @@ I used AI as a devil's advocate for my drafts on default visibility and sort ord
 
 ## PR Description
 <!-- Written at the end — feature overview, design decisions, manual testing steps -->
+
+
+### Feature Overview
+This PR adds a watchlist feature that allows users to save films they plan to watch later. It introduces the `WatchlistEntry` model, watchlist service functions, REST endpoints, duplicate prevention, UUID compatibility, and a test for nonexistent films.
+
+### Design Decisions
+- **Default visibility:** I chose `public=False` so users explicitly decide when to share their watchlists. This prioritizes privacy while still allowing public sharing when desired.
+- **Sort order:** Watchlists are sorted by `date_added` (newest first) because users typically return to the most recently saved films. Alphabetical sorting could be offered as an optional view later.
+
+### Manual Testing
+1. Start the application:
+   ```bash
+   python app.py
+   ```
+
+2. Add a film to a watchlist using:
+
+   POST /watchlist/<user_id>/add
+   Verify the response returns HTTP 201.
+3. Add the same film again and verify a duplicate error is returned.
+4. Add a nonexistent film ID and verify the appropriate error is returned.
+
+5. Retrieve the watchlist using:
+
+   GET /watchlist/<user_id>
+   Confirm the watchlist is ordered by newest entries first.
+
+## Git History Screenshot
+
+![Git Log](images/git-log.png)
