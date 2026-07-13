@@ -1,7 +1,7 @@
 # PR Response Doc — CineLog Watchlist Feature
 
 ## AI Usage
-<!-- Fill in at the end — how you used AI tools during this project -->
+I used AI as a devil's advocate for my drafts on default visibility and sort order. I asked what a careful reviewer would challenge and which tradeoffs I had missed. The critique identified two real gaps: changing the visibility default alone does not provide privacy while CineLog's read endpoint ignores the flag, and newest-first sorting can bury older films indefinitely. I revised my responses to make privacy enforcement part of the recommendation and to acknowledge recency bias and the longer-term value of user-controlled sorting or priority.
 
 ## Comment 1 — Rename
 **What I did:** Renamed `save_to_watchlist()` to `add_to_watchlist()` in `services/watchlist_service.py` to follow the project's `verb_to_noun` naming convention. I also updated the import and function call in `routes/watchlist/watchlist.py`.
@@ -17,14 +17,14 @@
 **How I verified:** Ran `pytest tests/test_watchlist.py -v`; the test passed (`1 passed`).
 
 ## Comment 4 — Default visibility
-**My position:**
-**Reasoning:**
-**Tradeoff acknowledged:**
+**My position:** Watchlist entries should default to `public=False`, with users explicitly choosing to make them public.
+**Reasoning:** CineLog is a community film-tracking app, but a watchlist is also personal planning data: users may save guilty pleasures, unfinished research, or films they simply are not ready to share. I am optimizing for users to save freely without first evaluating the social meaning of every addition. Privacy is difficult to restore after an entry has been exposed, while a private entry can safely be published later. However, changing the database default is not sufficient by itself. CineLog currently lets a watchlist be requested by user ID, and `get_watchlist()` does not filter on `public` or verify ownership. I would pair the private default with owner-aware authorization, public-only filtering for other viewers, and an explicit way to publish an entry; otherwise `public=False` would create a misleading promise of privacy.
+**Tradeoff acknowledged:** Keeping `public=True` better supports CineLog's community side: profiles become useful for film discovery immediately, and users do not have to publish every saved film manually. A private default will reduce the amount of shared content because some users will overlook or decline the opt-in, and it requires additional API and UI work before sharing is convenient. I still favor explicit consent because saving a film is not necessarily the same action as recommending it publicly, but the publishing control must be easy to find so privacy does not make the social feature feel empty.
 
 ## Comment 5 — Sort order
-**My position:**
-**Reasoning:**
-**Engagement with reviewer's point:**
+**My position:** I would change the watchlist to sort by `WatchlistEntry.date_added.desc()`, so the most recently saved films appear first.
+**Reasoning:** A CineLog watchlist behaves more like an inbox of film discoveries than a reference catalog. Users are likely to return soon after hearing about a film, so newest-first preserves that recent context and puts the latest intent at the top. It also matches the existing collection endpoint's ordering, making the two lists behave consistently. Alphabetical order is predictable when a user already knows a title, but search or an explicit alphabetical option would serve that task better than making it the only ordering.
+**Engagement with reviewer's point:** I agree with the maintainer that date-added order better reflects how users build a watchlist: a newly saved film should not disappear into an unrelated position determined by its title. A real downside is recency bias—frequent additions can push older films down indefinitely, even though those older entries may be the ones the user most wants to stop postponing. Date added also is not true priority; only the user knows what they intend to watch next. I would still use newest-first as the initial default because it reflects observable activity without inventing priority, then add selectable alphabetical/oldest-first sorting or manual priority if CineLog develops the watchlist into a planning tool.
 
 ## Comment 6 — Rebase
 **What conflicted:**
