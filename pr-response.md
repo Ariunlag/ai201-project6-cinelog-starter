@@ -9,8 +9,8 @@
 **How I verified:** Ran a project-wide search for both function names. The only `add_to_watchlist` references are the service definition, route import, and route call, and there are no remaining `save_to_watchlist` references.
 
 ## Comment 2 — Deduplication
-**What I did:**
-**How I verified:**
+**What I did:** Added an `AlreadyInWatchlistError` and updated `add_to_watchlist()` to query for an existing entry with the same `user_id` and `film_id`. If one exists, the function raises the new exception instead of inserting a duplicate.
+**How I verified:** Compared the implementation with the established deduplication pattern in `add_to_collection()` and confirmed the duplicate check runs before `db.session.add()` and `db.session.commit()`.
 
 ## Comment 3 — Missing test
 **What I did:**
